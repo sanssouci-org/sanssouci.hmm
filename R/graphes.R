@@ -1,13 +1,14 @@
 
 quant_max <- function(al, base){
   a<-  base %>%
-    mutate(eps =  map_dbl(eps, ~min(max(.x,-1), 1))) %>% 
+    mutate(eps =  map_dbl(eps, ~min(max(.x,-1), 1))) %>%
     pull(eps) %>% sort()
-  if(al >= 0.5){ 
+  if(al >= 0.5){
     max(a[ceiling(length(a)*al)],0)
   }else{
     min(a[floor(length(a)*al)+1],0)
   }
+  
 }
 mise_en_forme  <-  function(Result) {
   alpha <- Result$al %>% unique()
@@ -84,27 +85,23 @@ mise_en_forme  <-  function(Result) {
         
       }),
       q_samesel_delta = map2_dbl(Est_HMM_boot, V_HMM_est_aldelta, function(x, y) {
-        mutate(x, eps =  (y -  V_HMM_est_boot_aldelta_samesel)) %>%
-          mutate(eps =  map_dbl(eps, ~ min(max(.x, 0), Size))) %>%
-          pull(eps) %>%
-          quantile(probs = 1 - alpha *(1- delt),
-                   na.rm = TRUE,
-                   type = 3)
+        mutate(x, eps =  (y -  V_HMM_est_boot_aldelta_samesel)/Size) %>%
+          quant_max(1 - alpha *(1- delt), .)
+        # mutate(eps =  map_dbl(eps, ~ min(max(.x, 0), Size))) %>%
+        # pull(eps) %>%
+        # quantile(probs = 1 - alpha / 2,
+        #          na.rm = TRUE,
+        #          type = 3)
         
       }),
       q_samesel_small_delta = map2_dbl(Est_HMM_boot, V_HMM_small_est_aldelta, function(x, y) {
         mutate(x, eps =  (y -  V_HMM_small_est_boot_aldelta_samesel) / Size) %>%
-          quant_max(alpha  *(1- delt), .)
+          quant_max(alpha *(1- delt), .)
         
       }),
       q_samesel1_moins_delta = map2_dbl(Est_HMM_boot, V_HMM_est_al1_moins_delta, function(x, y) {
         mutate(x, eps =  (y -  V_HMM_est_boot_al1_moins_delta_samesel)) %>%
-          mutate(eps =  map_dbl(eps, ~ min(max(.x, 0), Size))) %>%
-          pull(eps) %>%
-          quantile(probs = 1 - alpha * delt,
-                   na.rm = TRUE,
-                   type = 3)
-        
+          quant_max(1 - alpha *( delt), .)
       }),
      
        q_samesel_small1_moins_delta = map2_dbl(Est_HMM_boot, V_HMM_small_est_al1_moins_delta, function(x, y) {
@@ -115,7 +112,7 @@ mise_en_forme  <-  function(Result) {
       V_HMM_boot_samesel = V_HMM_est_aldemi + q_samesel * Size,
       V_HMM_small_boot_samesel = V_HMM_small_est_aldemi + q_samesel_small *
         Size,
-      V_HMM_boot_samesel_delta = V_HMM_est_aldelta + q_samesel_delta ,
+      V_HMM_boot_samesel_delta = V_HMM_est_aldelta + q_samesel_delta * Size ,
       V_HMM_small_boot_samesel_delta = V_HMM_small_est_aldelta + q_samesel_small_delta *
         Size,
       V_HMM_boot3 = V_HMM_est + q_b3_high * Size,
@@ -129,24 +126,14 @@ mise_en_forme  <-  function(Result) {
       V_HMM_small_boot_qdemi = V_HMM_small_est_aldemi + q_aldemi_low * Size,
       V_HMM_boot_naif = map_dbl(
         Est_HMM_boot,
-        ~ mutate(., pct_boot = Real_boot / Size_boot) %>%
-          pull(pct_boot) %>%
-          quantile(
-            probs = (1 - alpha),
-            na.rm = TRUE,
-            type  = 3
-          )
+        ~ mutate(., eps = Real_boot / Size_boot) %>%
+          quant_max((1-alpha), .)
       ),
       V_HMM_boot_naif = V_HMM_boot_naif * Size,
       V_HMM_small_boot_naif = map_dbl(
         Est_HMM_boot,
-        ~  mutate(., pct_boot = Real_boot / Size_boot) %>%
-          pull(pct_boot) %>%
-          quantile(
-            probs = (alpha),
-            na.rm = TRUE,
-            type = 3
-          )
+        ~  mutate(., eps = Real_boot / Size_boot) %>%
+          quant_max((alpha), .)
       ),
       V_HMM_small_boot_naif = V_HMM_small_boot_naif * Size,
       FDR_boot_naif = map_dbl(Est_HMM_boot, ~ pull(. , Real_boot) %>%
@@ -182,37 +169,6 @@ mise_en_forme  <-  function(Result) {
           "H0~intersect()~Viterbi"
         )
       )
-      # Nom = case_when(
-      #   Nom == "pval_tresh" ~  "S(X) == bgroup('{',p < 0.05,'}')",
-      #   Nom == "pvalm_sel" ~   "S(X) == bgroup('{',p < 0.05,'}')~intersect()~bgroup('{','1, ..., 200' ,'}')",
-      #   Nom == "sel_viter_est" ~ "S(X) == bgroup('{',viterbi == 1,'}')",
-      #   Nom == "sel_viter_min_size" ~ "S(X) == bgroup('{','viterbi = 1 & size > 4','}')",
-      #   Nom == "pvalm_tresh_H0" ~  "S(X) ==H0~intersect()~ bgroup('{',p < 0.05 ,'}')",
-      #   Nom == "sel_viter_est_H0" ~ "S(X) ==H0~intersect()~bgroup('{',viterbi == 1 ,'}')",
-      #   Nom == "H1" ~  "S(X) == H1",
-      #   Nom == "pval_ord" ~  "S(X) == bgroup('{',p < th,'}')",
-      #   Nom == "lfdr_tresh" ~  "S(X) == SC(0.05)",
-      #   Nom == "lfdr_tresh_pval" ~  "S(X) == SC(FDR[p])",
-      #   Nom == "lfdr_tresh_viter" ~  "S(X) == SC(FDR[v])",
-      #   Nom == "block" ~ "S(X) ==bgroup('{','1, ..., 200' ,'}')"
-      # ),
-      # Nom = factor(
-      #   Nom,
-      #   levels = c(
-      #     "S(X) == bgroup('{',p < 0.05,'}')",
-      #     "S(X) == bgroup('{',p < 0.05,'}')~intersect()~bgroup('{','1, ..., 200' ,'}')",
-      #     "S(X) == SC(FDR[p])",
-      #     "S(X) == SC(0.05)",
-      #     "S(X) == bgroup('{',p < th,'}')",
-      #     "S(X) == bgroup('{',viterbi == 1,'}')",
-      #     "S(X) == SC(FDR[v])",
-      #     "S(X) == bgroup('{','viterbi = 1 & size > 4','}')",
-      #     "S(X) ==bgroup('{','1, ..., 200' ,'}')",
-      #     "S(X) == H1",
-      #     "S(X) ==H0~intersect()~ bgroup('{',p < 0.05 ,'}')",
-      #     "S(X) ==H0~intersect()~bgroup('{',viterbi == 1 ,'}')"
-      #   )
-      # )
     ) %>%
     mutate_at(.vars = vars(starts_with("V_")), ~ case_when(. > Size ~  Size,
                                                            TRUE ~ .))

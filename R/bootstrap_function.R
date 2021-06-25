@@ -100,7 +100,6 @@ boots_delta <- function (A_est, Pi_est =NULL, x_from, prob1, h, Sel_from, al, se
   }
   A_est <- Est$Em$A
   Pi_est <- Est$Em$Pi
-  browser()
   Sel <- sel_function(x, Est$Em$fw_bc_EM, seuil, A_est,
                          f0x_est =Est$Em$f0x ,
                          f1x_est= Est$Em$f1x, Pi_est, min_size,
@@ -122,10 +121,11 @@ boots_delta <- function (A_est, Pi_est =NULL, x_from, prob1, h, Sel_from, al, se
         sum(K((x - xi)/h) * Est$Em$fw_bc_EM$gamma[, 1])/sum(h * Est$Em$fw_bc_EM$gamma[, 1])
       })
       f0x_from <- approx(d1_from$x, f0x_first, x_from)$y 
+      rm(f0x_first)
     }
     
     rm(f1x_first)
-    rm(f0x_first)
+   
     gc()
   }
   else {
@@ -184,8 +184,7 @@ boots_delta <- function (A_est, Pi_est =NULL, x_from, prob1, h, Sel_from, al, se
            V_HMM_est_boot_samesel = map_dbl(Borne_from, ~.[6]),
            V_HMM_small_est_boot_samesel = map_dbl(Borne_from, ~.[5]),
            Espe = map_dbl(Sel, ~sum(fw_bc_or_star$gamma[.,1])),
-           Real_boot = map_dbl(Sel, ~sum(theta[.] == 0)),
-           Est = list(Est)) %>%
+           Real_boot = map_dbl(Sel, ~sum(theta[.] == 0))) %>%
     select(-Borne_oracle_boot, -Borne_est_boot, -Borne_from)
   return(Sel_boot)
 }

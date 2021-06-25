@@ -207,7 +207,7 @@ simu_delta <- function(m, A, Pi = NULL,  rho, SNR, prob, type_sim = "HMM", al, s
   
  
 
-  Final <- sanssouci.hmm (x, al = al, sel_function, delta = delta, h = h,
+  Final <- res_all (x, al = al, sel_function, delta = delta, h = h,
                           norm_init = norm_init,
                           m0_init = m0_init, sd0_init = sd0_init, 
                           df_init = df_init,

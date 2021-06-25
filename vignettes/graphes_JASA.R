@@ -1,19 +1,4 @@
-## graphe for paper 
 
-rm(list=ls())
-library(tidyverse)
-library(sansSouci)
-library(ggsci)
-source('fun_for_JASA.R')
-source("graphes.R")
-library(extrafont) 
-library(viridis)
-theme_set(theme_bw() +
-            theme(strip.background = element_rect(fill = "white"),
-                  text = element_text(face="bold", family="LM Roman 10"),
-            ))
-
-require(ggsci)
 get_res <- function(name){
   # l <- load(paste0(name, ".RData"))
   # Result <- get(l)
