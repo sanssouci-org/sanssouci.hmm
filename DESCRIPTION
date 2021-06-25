@@ -1,6 +1,6 @@
 Package: hmm.sanssouci
 Type: Package
-Title: What the package does (short line)
+Title: Confindence bound on the FDP after post-selection under an HMM
 Version: 1.0
 Date: 2021-06-24
 Author: Who wrote it

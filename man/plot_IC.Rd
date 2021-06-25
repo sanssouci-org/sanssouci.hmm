@@ -4,7 +4,7 @@
 \alias{plot_IC}
 \title{Title}
 \usage{
-plot_IC(Final)
+plot_IC(Final, col1 = c("orange", "lightblue", "grey30"))
 }
 \arguments{
 \item{Final}{}

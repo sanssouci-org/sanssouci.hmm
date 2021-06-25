@@ -27,7 +27,7 @@ This quantity is the number of position in $S(X)$ where there is no signals, thi
 ## Install the package 
 
 ```{r, eval = FALSE}
-devtools::install_github("Marie-PerrotDockes/hmm.sanssouci")
+devtools::install_github("Marie-PerrotDockes/sanssouci.hmm")
 ```
 
 ```{r}

@@ -22,7 +22,7 @@ Install the package
 -------------------
 
 ``` r
-devtools::install_github("Marie-PerrotDockes/hmm.sanssouci")
+devtools::install_github("Marie-PerrotDockes/sanssouci.hmm")
 ```
 
 ``` r
