@@ -4,7 +4,6 @@
 #' 
 #' @useDynLib hmm.sanssouci
 #' @importFrom Rcpp evalCpp
-#' @import sansSouci
 #' @importFrom  magrittr "%>%"
 #' @importFrom dplyr arrange
 #' @importFrom dplyr mutate

@@ -11,6 +11,27 @@ f1x_hat <- function(f0x, f_hatx, pi0_hat){
 }
 
 
+#' Title
+#'
+#' @param x 
+#' @param h 
+#' @param m0_init 
+#' @param sd0_init 
+#' @param df_init 
+#' @param norm_init 
+#' @param max_pi0 
+#' @param f0_known 
+#' @param f0x_est 
+#' @param pval 
+#' @param plot 
+#' @param size_plot 
+#' @param approx 
+#' @param maxit 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 Estimation <- function(x,  h =0.3,
                        m0_init, sd0_init, df_init, norm_init, max_pi0= 0.99999, 
                        f0_known = TRUE, f0x_est = NULL, pval = NULL, 
