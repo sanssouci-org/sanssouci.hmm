@@ -9,9 +9,6 @@ plot_IC(Final, col1 = c("orange", "lightblue", "grey30"))
 \arguments{
 \item{Final}{}
 }
-\value{
-
-}
 \description{
 Title
 }

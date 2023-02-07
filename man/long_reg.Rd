@@ -11,9 +11,6 @@ long_reg(viterbi, min_size)
 
 \item{min_size}{}
 }
-\value{
-
-}
 \description{
 Title
 }

@@ -15,9 +15,6 @@ f_hatK(x_obs, x, h = 0.3, K)
 
 \item{K}{}
 }
-\value{
-
-}
 \description{
 Title
 }

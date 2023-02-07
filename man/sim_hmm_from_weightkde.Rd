@@ -19,9 +19,6 @@ sim_hmm_from_weightkde(A, Pi, x_from, prob1, h, n)
 
 \item{n}{}
 }
-\value{
-
-}
 \description{
 Title
 }

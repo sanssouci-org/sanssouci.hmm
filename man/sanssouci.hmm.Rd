@@ -54,9 +54,6 @@ sanssouci.hmm(
 
 \item{approx}{wheter the kde is approximated using linear interpolation with a large range of values or calculate for every point.}
 }
-\value{
-
-}
 \description{
 Title
 }

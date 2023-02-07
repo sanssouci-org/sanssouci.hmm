@@ -19,8 +19,6 @@ sim_markov(m, Pi, A)
 }
 \value{
 Product of matrices
-
-
 }
 \description{
 Simple matrix multiplication
