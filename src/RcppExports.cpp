@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // for_back
 Rcpp::List for_back(int m, arma::mat A, arma::vec f0x, arma::vec f1x, arma::vec Pi);
 RcppExport SEXP _hmm_sanssouci_for_back(SEXP mSEXP, SEXP ASEXP, SEXP f0xSEXP, SEXP f1xSEXP, SEXP PiSEXP) {
