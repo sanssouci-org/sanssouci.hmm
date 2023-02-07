@@ -1,4 +1,20 @@
 # 
+#' Title
+#'
+#' @param type_borne 
+#' @param sel 
+#' @param a 
+#' @param alpha 
+#' @param m 
+#' @param pval 
+#' @param C 
+#' @param ZL 
+#' @param leaf_list 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 borne <- function( type_borne, sel, a, alpha, m, 
                    pval,
                    C, ZL, leaf_list){
