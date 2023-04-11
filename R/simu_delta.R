@@ -362,12 +362,16 @@ simu_delta <- function(m, A, Pi, n, rho, SNR, prob, type_sim = "HMM", al, s_dbnr
                        m0_init, sd0_init, df_init, norm_init, max_pi0= 0.99999,
                        type_init, num_seed, f0_known, approx, all =FALSE,
                        size_b0= 300, pct_b1 =1/3, include_H0 = FALSE, delta, n_seg, 
-                       drop1, drop2, tumorFraction) {
+                       drop1, drop2, tumorFraction, sim_markov_nonstat= NULL) {
   set.seed(num_seed)
   ## Simuation des donnees
   if(type_sim =="HMM"){
     theta <- sim_markov(m, Pi, A)
   }
+  if (type_sim == "HMM_nonstat") {
+    theta <- sim_markov_nonstat(m, Pi)
+  }
+  
   if(type_sim =="block"){
     theta <- rep(rep(0:1, c(size_b0, size_b0 * pct_b1)),
                  m / (size_b0 * (1 + pct_b1)))

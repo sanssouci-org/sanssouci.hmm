@@ -22,6 +22,19 @@ sim_markov <-function(m, Pi, A){
   return(theta)
 }
 
+
+extension_kr <- function( pval_tot, pval_sel, al){
+  enframe(pval_tot) %>% 
+    mutate(zeta = map_dbl(value, function(x){
+      min(floor(log(1/al)/log(1 + 1/al)*(1 + m*x)),
+          sum(pval_sel <=x))
+    }),
+    priv = map_dbl(value, function(x){
+      sum(pval_sel >x)
+    }), 
+    tot = zeta+ priv) %>% 
+    pull(tot) %>% min()
+}
 #' Title
 #'
 #' @param viterbi 

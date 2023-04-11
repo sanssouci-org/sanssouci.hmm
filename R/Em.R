@@ -101,7 +101,7 @@ Em <- function(m, A ,
                maxit =1000, h = 0.3, f0_known, approx = TRUE){
   if(approx){
     if(f0_known){
-      Em_tot_approx(m, A ,
+    a<-   Em_tot_approx(m, A ,
                     Pi,  f0x, f1x,
                     x, eps,
                     maxit, h)
@@ -113,10 +113,12 @@ Em <- function(m, A ,
     }
   }else{
     if(f0_known){
-      Em_tot(m, A ,
+      a<- Em_tot(m, A ,
              Pi,  f0x, f1x,
              x, eps,
              maxit, h)
+      a$f0x <- f0x
+      a
     }else{
       Em_tot_01(m, A ,
                 Pi,  f0x, f1x,

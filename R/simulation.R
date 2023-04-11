@@ -114,119 +114,123 @@ Selection_delta <- function(x, fw_bc, seuil, A_est,
 #' min_size = 2, norm = TRUE, sd0 = 0.5, m0= 0,sd0_init = 0.5, m0_init= 0,
 #' norm_init = TRUE, df= 2, num_seed= 1234, type_init="given", f0_known=TRUE,
 #' approx = TRUE, delta = 0.9)
-simu_delta <- function(m, A, Pi = NULL,  rho, SNR, prob, type_sim = "HMM", al, s_dbnr,
-                       b_act, d, seuil,
-                       h =0.3,  n_boot, min_size, norm, m0, sd0, df,
-                       m0_init, sd0_init, df_init, norm_init, max_pi0= 0.99999,
-                       type_init, num_seed, f0_known, approx, all =FALSE,
-                       size_b0= 300, pct_b1 =1/3, include_H0 = FALSE, delta, n_seg, 
-                       drop1, drop2, tumorFraction, sel_function = Selection_delta) {
-  set.seed(num_seed)
-  if(is.null(Pi)){
-    Pi0 <- A[2,1] / (1 + A[2,1] - A[1,1])
-    Pi <- c(Pi0, 1- Pi0)
-  }
-  ## Simuation des donnees
-  if(type_sim =="HMM"){
-    theta <- sim_markov(m, Pi, A)
-  }
-  if(type_sim =="block"){
-    theta <- rep(rep(0:1, c(size_b0, size_b0 * pct_b1)),
-                 m / (size_b0 * (1 + pct_b1)))
-    nb0 <-  m / (1+pct_b1)
-    nb1 <- m - nb0
-    A <- matrix(c((nb0-8)/(nb0-1), (8)/(nb0-1),(7)/(nb1-1),(nb1-7)/(nb1-1)), ncol =2, byrow = TRUE)
-  }
-  if (type_sim == "realistic") {
-    realistic <-
-      sim_realistic(len = m,
-                    n_seg = n_seg,
-                    drop1,
-                    drop2,
-                    tumorFraction)
-    theta <- realistic$theta
-    x <- realistic$w
-    rm(realistic)
-    gc()
-    thet_deb <- theta[-m]
-    thet_fin <- theta[-1]
-    nb00 <- sum((thet_deb - thet_fin + 1) * (1 - thet_deb))
-    nb11 <- sum(-(thet_deb - thet_fin - 1) * (thet_deb))
-    nb0  <- sum(1 - theta)
-    nb1 <- sum(theta)
-    A <-
-      matrix(
-        c(nb00 / nb0, 1 -  nb00 / nb0, 1 - nb11 / nb1,  nb11 / nb1),
-        byrow = TRUE,
-        ncol = 2
-      )
-  }
-  if (type_sim != "realistic") {
-    x <- rep(0, m)
-    if (norm) {
-      x[theta == 0] <- rnorm(sum(theta == 0), m0, sd0)
-      x[theta == 1] <- rnorm(sum(theta == 1), SNR * sd0 + m0,
-                             sd0)
-    }
-    else {
-      x[theta == 0] <- rt(sum(theta == 0), df)
-      x[theta == 1] <- rt(sum(theta == 1), df) + SNR
-    }
-  }
-  
-  if(type_init == "locfdr"){
-    w <- locfdr(x)
-    m0_init <- w$fp0[3,1]
-    sd0_init <-  w$fp0[3,2]
-    norm_init <- TRUE
-  }
-  
-  if(norm_init){
-    pval <- 2 * (1 - pnorm(abs(x), m0_init, sd0_init))
-  }else{
-    pval <- 2 * (1 - pt(abs(x), df_init))
-  }
-  
-  
-  ## Pour HMM oracle
-  if(norm){
-    f0x <- dnorm(x, m0, sd0)
-    f1x <- dnorm(x, SNR*sd0 + m0, sd0)
-  }else{
-    f0x <- dt(x, df)
-    f1x <- dt(x-SNR, df)
-  }
-  
-  fw_bc_or <- for_back(m, A, f0x, f1x, Pi)
-  Pis_or <- lapply(2:m, function(i){
-    get_A( m,alpha = fw_bc_or$alpha, beta = fw_bc_or$beta, A, f0x, f1x, i = i)
-  } )
-  
-  
-  
-  
- 
-
-  Final <- res_all (x, al = al, sel_function, delta = delta, h = h,
-                          norm_init = norm_init,
-                          m0_init = m0_init, sd0_init = sd0_init, 
-                          df_init = df_init,
-                          max_pi0= max_pi0,
-                          min_size = min_size,
-                          f0_known = f0_known, 
-                          approx = approx, drop_sel = FALSE)   %>%
-    mutate(
-      IC_or = map(Sel,~get_IC(sel = ., li0 = fw_bc_or$gamma[,1],
-                              Pis = Pis_or, f0x =f0x ,
-                              f1x= f1x, alpha = al)),
-      V_HMM_small_or =  map_dbl(IC_or,~.[1]),
-      V_HMM_or =  map_dbl(IC_or,~.[2]),
-      FDR_or  = map_dbl(Sel, ~sum(fw_bc_or$gamma[.,1])),
-      V_real = map_dbl(Sel , ~sum(theta[.] == 0))
-    ) %>%
-    select(-Sel,  -IC_or) 
-  return(Final)
-} 
+# simu_delta <- function(m, A, Pi = NULL,  rho, SNR, prob, type_sim = "HMM", al, s_dbnr,
+#                        b_act, d, seuil,
+#                        h =0.3,  n_boot, min_size, norm, m0, sd0, df,
+#                        m0_init, sd0_init, df_init, norm_init, max_pi0= 0.99999,
+#                        type_init, num_seed, f0_known, approx, all =FALSE,
+#                        size_b0= 300, pct_b1 =1/3, include_H0 = FALSE, delta, n_seg, 
+#                        drop1, drop2, tumorFraction, sel_function = Selection_delta) {
+#   set.seed(num_seed)
+#   if(is.null(Pi)){
+#     Pi0 <- A[2,1] / (1 + A[2,1] - A[1,1])
+#     Pi <- c(Pi0, 1- Pi0)
+#   }
+#   ## Simuation des donnees
+#   if(type_sim =="HMM"){
+#     theta <- sim_markov(m, Pi, A)
+#   }
+#   if (type_sim == "HMM_nonstat") {
+#     theta <- sim_markov_nonstat(m, Pi)
+#   }
+#   
+#   if(type_sim =="block"){
+#     theta <- rep(rep(0:1, c(size_b0, size_b0 * pct_b1)),
+#                  m / (size_b0 * (1 + pct_b1)))
+#     nb0 <-  m / (1+pct_b1)
+#     nb1 <- m - nb0
+#     A <- matrix(c((nb0-8)/(nb0-1), (8)/(nb0-1),(7)/(nb1-1),(nb1-7)/(nb1-1)), ncol =2, byrow = TRUE)
+#   }
+#   if (type_sim == "realistic") {
+#     realistic <-
+#       sim_realistic(len = m,
+#                     n_seg = n_seg,
+#                     drop1,
+#                     drop2,
+#                     tumorFraction)
+#     theta <- realistic$theta
+#     x <- realistic$w
+#     rm(realistic)
+#     gc()
+#     thet_deb <- theta[-m]
+#     thet_fin <- theta[-1]
+#     nb00 <- sum((thet_deb - thet_fin + 1) * (1 - thet_deb))
+#     nb11 <- sum(-(thet_deb - thet_fin - 1) * (thet_deb))
+#     nb0  <- sum(1 - theta)
+#     nb1 <- sum(theta)
+#     A <-
+#       matrix(
+#         c(nb00 / nb0, 1 -  nb00 / nb0, 1 - nb11 / nb1,  nb11 / nb1),
+#         byrow = TRUE,
+#         ncol = 2
+#       )
+#   }
+#   if (type_sim != "realistic") {
+#     x <- rep(0, m)
+#     if (norm) {
+#       x[theta == 0] <- rnorm(sum(theta == 0), m0, sd0)
+#       x[theta == 1] <- rnorm(sum(theta == 1), SNR * sd0 + m0,
+#                              sd0)
+#     }
+#     else {
+#       x[theta == 0] <- rt(sum(theta == 0), df)
+#       x[theta == 1] <- rt(sum(theta == 1), df) + SNR
+#     }
+#   }
+#   
+#   if(type_init == "locfdr"){
+#     w <- locfdr(x)
+#     m0_init <- w$fp0[3,1]
+#     sd0_init <-  w$fp0[3,2]
+#     norm_init <- TRUE
+#   }
+#   
+#   if(norm_init){
+#     pval <- 2 * (1 - pnorm(abs(x), m0_init, sd0_init))
+#   }else{
+#     pval <- 2 * (1 - pt(abs(x), df_init))
+#   }
+#   
+#   
+#   ## Pour HMM oracle
+#   if(norm){
+#     f0x <- dnorm(x, m0, sd0)
+#     f1x <- dnorm(x, SNR*sd0 + m0, sd0)
+#   }else{
+#     f0x <- dt(x, df)
+#     f1x <- dt(x-SNR, df)
+#   }
+#   
+#   fw_bc_or <- for_back(m, A, f0x, f1x, Pi)
+#   Pis_or <- lapply(2:m, function(i){
+#     get_A( m,alpha = fw_bc_or$alpha, beta = fw_bc_or$beta, A, f0x, f1x, i = i)
+#   } )
+#   
+#   
+#   
+#   
+#  
+# 
+#   Final <- res_all (x, al = al, sel_function, delta = delta, h = h,
+#                           norm_init = norm_init,
+#                           m0_init = m0_init, sd0_init = sd0_init, 
+#                           df_init = df_init,
+#                           max_pi0= max_pi0,
+#                           min_size = min_size,
+#                           f0_known = f0_known, 
+#                           approx = approx, drop_sel = FALSE)   %>%
+#     mutate(
+#       IC_or = map(Sel,~get_IC(sel = ., li0 = fw_bc_or$gamma[,1],
+#                               Pis = Pis_or, f0x =f0x ,
+#                               f1x= f1x, alpha = al)),
+#       V_HMM_small_or =  map_dbl(IC_or,~.[1]),
+#       V_HMM_or =  map_dbl(IC_or,~.[2]),
+#       FDR_or  = map_dbl(Sel, ~sum(fw_bc_or$gamma[.,1])),
+#       V_real = map_dbl(Sel , ~sum(theta[.] == 0))
+#     ) %>%
+#     select(-Sel,  -IC_or) 
+#   return(Final)
+# } 
 
 
 
