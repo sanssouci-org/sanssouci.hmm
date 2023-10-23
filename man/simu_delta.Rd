@@ -43,7 +43,8 @@ simu_delta(
   drop1,
   drop2,
   tumorFraction,
-  sim_markov_nonstat = NULL
+  sim_markov_nonstat = NULL,
+  sel_function = Selection_delta
 )
 }
 \arguments{

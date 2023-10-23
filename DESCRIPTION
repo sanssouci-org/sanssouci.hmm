@@ -7,6 +7,10 @@ Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
-Imports: Rcpp (>= 1.0.6)
+Imports: 
+  Rcpp (>= 1.0.6),
+  dplyr,
+  magrittr,
+  tibble
 LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.2.3

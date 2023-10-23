@@ -22,33 +22,36 @@ Estimation(
 )
 }
 \arguments{
-\item{x}{}
+\item{x}{value of the statistics}
 
-\item{h}{}
+\item{h}{window for the kernel estimation}
 
-\item{m0_init}{}
+\item{m0_init}{if norm_init TRUE, initial expectency of the law under H0}
 
-\item{sd0_init}{}
+\item{sd0_init}{if norm_init TRUE, initial sd of the law under H0}
 
-\item{df_init}{}
+\item{df_init}{degree of freedom if f0 is initialized with a student}
 
-\item{norm_init}{}
+\item{norm_init}{either f0 is initialized with a normal distribution}
 
-\item{max_pi0}{}
+\item{max_pi0}{pi0 cann't get to close to one it is the maximum value}
 
-\item{f0_known}{}
+\item{f0_known}{wether or not  f0 is known. (If not f0 is estimated)}
 
-\item{f0x_est}{}
+\item{f0x_est}{(if f0 is known it's the value of f0 for each element of x)}
 
-\item{pval}{}
+\item{pval}{one can also provide directly some p-value}
 
-\item{plot}{}
+\item{plot}{represents the density ?}
 
 \item{size_plot}{}
 
 \item{approx}{}
 
-\item{maxit}{}
+\item{maxit}{maximum number of iteration}
+}
+\value{
+a list with the estimated parameters (the value of f0 and f1 for all element of x and the transition matrix A)
 }
 \description{
 Title

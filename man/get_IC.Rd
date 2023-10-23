@@ -7,7 +7,7 @@
 get_IC(sel, li0, Pis, f0x, f1x, alpha)
 }
 \arguments{
-\item{sel}{must be ordered!}
+\item{sel}{an ordered vector of selected indexes.}
 
 \item{li0}{}
 

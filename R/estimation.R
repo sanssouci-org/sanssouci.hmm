@@ -13,22 +13,22 @@ f1x_hat <- function(f0x, f_hatx, pi0_hat){
 
 #' Title
 #'
-#' @param x 
-#' @param h 
-#' @param m0_init 
-#' @param sd0_init 
-#' @param df_init 
-#' @param norm_init 
-#' @param max_pi0 
-#' @param f0_known 
-#' @param f0x_est 
-#' @param pval 
-#' @param plot 
+#' @param x value of the statistics
+#' @param h window for the kernel estimation
+#' @param m0_init  if norm_init TRUE, initial expectency of the law under H0
+#' @param sd0_init  if norm_init TRUE, initial sd of the law under H0
+#' @param df_init degree of freedom if f0 is initialized with a student
+#' @param norm_init either f0 is initialized with a normal distribution
+#' @param max_pi0 pi0 cann't get to close to one it is the maximum value
+#' @param f0_known wether or not  f0 is known. (If not f0 is estimated)
+#' @param f0x_est (if f0 is known it's the value of f0 for each element of x)
+#' @param pval one can also provide directly some p-value
+#' @param plot represents the density ? 
 #' @param size_plot 
 #' @param approx 
-#' @param maxit 
+#' @param maxit maximum number of iteration
 #'
-#' @return
+#' @return a list with the estimated parameters (the value of f0 and f1 for all element of x and the transition matrix A)
 #' @export
 #'
 #' @examples

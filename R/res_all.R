@@ -49,6 +49,7 @@ res_all<- function(x, al, sel_function, delta = 0.1, h = 0.3,
   boots <- enframe( x = 1:n_boot, name = NULL, value = "id_boot") %>%
     mutate(HMM_boot = map(id_boot, ~boots_delta(A_est = A_est, Pi_est= Pi_est,
                                                 x_from = x,
+                                                sel_function= sel_function,
                                                 prob1 = Est$Em$fw_bc_EM$gamma[,2], h =h,
                                                 Sel = Sel, al = 0.1,
                                                 seuil = seuil,
@@ -58,8 +59,7 @@ res_all<- function(x, al, sel_function, delta = 0.1, h = 0.3,
                                                 df_init  = df_init, norm_init = norm_init,
                                                 type_init = type_init,
                                                 approx = approx,
-                                                delta = delta, 
-                                                sel_function = sel_function))) %>%
+                                                delta = delta))) %>%
     unnest(HMM_boot) %>%
     select(- Sel) %>%
     nest(Est_HMM_boot = c(id_boot, Real_boot,

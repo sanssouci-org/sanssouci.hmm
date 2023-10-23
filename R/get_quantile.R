@@ -32,7 +32,7 @@ get_quantiles <- function(sel, li0, Pis, f0x, f1x){
 
 #' Title
 #'
-#' @param sel must be ordered!
+#' @param sel an ordered vector of selected indexes. 
 #' @param li0 
 #' @param Pis 
 #' @param f0x 

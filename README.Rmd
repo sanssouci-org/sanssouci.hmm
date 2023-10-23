@@ -36,7 +36,7 @@ library(hmm.sanssouci)
 ```
 
 
-## A first example
+## A toy  example
 
 
 In this toy example we have $m = 2000$ simulations and we assume that the  hypothesis are naturally ordered. 
@@ -53,7 +53,7 @@ x[theta == 1] <- rnorm(sum(theta ==1), 2, 1)
 ```
 
 
-The package provides an upper function to calculate different bounds available in our article and a function ploting the main bounds proposed in the article. 
+The package provides a function to calculate different bounds available (here with a risk alpha = 10\%) in our article and a function ploting the main bounds proposed in the article. 
 
 
 ```{r}
@@ -63,6 +63,10 @@ Final <- sanssouci.hmm(x, al= 0.1, sel_function = Selection_delta)
 plot_IC(Final)
 
 ```
+
+
+
+## A toy simulation 
 
 One can also add simulation studies. 
 
@@ -79,6 +83,10 @@ Test <- simu_delta( m = c(1000),
                     min_size = 2, norm = TRUE, sd0 = 0.5, m0= 0,sd0_init = 0.5, m0_init= 0,
                     norm_init = TRUE, df= 2, num_seed= 1234, type_init="given", f0_known=TRUE,
                     approx = TRUE, delta = 0.9)
+
+test_mf<- mise_en_forme(Test)
+plot_IC(test_mf, sim = TRUE)
+
 ```
 
 

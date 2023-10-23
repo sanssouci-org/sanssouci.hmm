@@ -10,9 +10,19 @@ quant_max <- function(al, base){
   }
   
 }
+#' Title
+#'
+#' @param Result 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 mise_en_forme  <-  function(Result) {
   alpha <- Result$al %>% unique()
-  delt <- Result$delta %>% unique()
+  if("delta" %in% names(Result)){
+    delt <- Result$delta %>% unique()
+  }
   Res_all <-   Result %>%
     filter(Size > 0) %>%
     mutate(

@@ -25,7 +25,8 @@ boots_delta(
   maxit = 100,
   f0_known = TRUE,
   delta,
-  type_check = "closer_to0"
+  type_check = "closer_to0",
+  sel_function
 )
 }
 \arguments{

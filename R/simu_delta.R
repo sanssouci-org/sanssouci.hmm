@@ -116,7 +116,7 @@ Selection_delta <- function(x, fw_bc, seuil, A_est,
 boots_delta <- function (A_est, Pi_est, x_from, prob1, h, Sel_from, al, seuil,
                          min_size, n, max_pi0, m0_init, sd0_init, df_init, norm_init,
                          type_init, approx, maxit=100,f0_known = TRUE,delta,
-                         type_check = "closer_to0")
+                         type_check = "closer_to0", sel_function)
 {
   Pi0 <- A_est[2,1] / (1 + A_est[2,1] - A_est[1,1])
   Pi_est <- c(Pi0, 1- Pi0)
@@ -213,7 +213,7 @@ boots_delta <- function (A_est, Pi_est, x_from, prob1, h, Sel_from, al, seuil,
   }
   A_est <- Est$Em$A
   Pi_est <- Est$Em$Pi
-  Sel <- Selection_delta(x, Est$Em$fw_bc_EM, seuil, A_est,
+  Sel <- sel_function(x, Est$Em$fw_bc_EM, seuil, A_est,
                          f0x_est =Est$Em$f0x ,
                          f1x_est= Est$Em$f1x, Pi_est, min_size,
                          pval = pval_don,
@@ -234,10 +234,10 @@ boots_delta <- function (A_est, Pi_est, x_from, prob1, h, Sel_from, al, seuil,
         sum(K((x - xi)/h) * Est$Em$fw_bc_EM$gamma[, 1])/sum(h * Est$Em$fw_bc_EM$gamma[, 1])
       })
       f0x_from <- approx(d1_from$x, f0x_first, x_from)$y 
+      rm(f0x_first)
     }
     
     rm(f1x_first)
-    rm(f0x_first)
     gc()
   }
   else {
@@ -362,7 +362,7 @@ simu_delta <- function(m, A, Pi, n, rho, SNR, prob, type_sim = "HMM", al, s_dbnr
                        m0_init, sd0_init, df_init, norm_init, max_pi0= 0.99999,
                        type_init, num_seed, f0_known, approx, all =FALSE,
                        size_b0= 300, pct_b1 =1/3, include_H0 = FALSE, delta, n_seg, 
-                       drop1, drop2, tumorFraction, sim_markov_nonstat= NULL) {
+                       drop1, drop2, tumorFraction, sim_markov_nonstat= NULL, sel_function = Selection_delta) {
   set.seed(num_seed)
   ## Simuation des donnees
   if(type_sim =="HMM"){
@@ -462,7 +462,7 @@ simu_delta <- function(m, A, Pi, n, rho, SNR, prob, type_sim = "HMM", al, s_dbnr
   Pi_est <- Est$Em$Pi
   H0 <- sum(theta == 0)
   H1 <- sum(theta == 1)
-  Sel <- Selection_delta(x, Est$Em$fw_bc_EM, seuil, A_est,
+  Sel <- sel_function(x, Est$Em$fw_bc_EM, seuil, A_est,
                          f0x_est =Est$Em$f0x ,
                          f1x_est= Est$Em$f1x, Pi_est, min_size,
                          pval = pval_don,
@@ -489,7 +489,8 @@ simu_delta <- function(m, A, Pi, n, rho, SNR, prob, type_sim = "HMM", al, s_dbnr
                                                 df_init  = df_init, norm_init = norm_init,
                                                 type_init = type_init,
                                                 approx = approx,
-                                                delta = delta))) %>%
+                                                delta = delta,
+                                                sel_function=sel_function))) %>%
     unnest(HMM_boot) %>%
     select(- Sel) %>%
     nest(Est_HMM_boot = c(id_boot, Real_boot,
@@ -556,7 +557,8 @@ simu_delta <- function(m, A, Pi, n, rho, SNR, prob, type_sim = "HMM", al, s_dbnr
     ) %>%
     select(-Sel,  -Borne_est) %>%
     left_join(boots, by = c("Nom"))
-  
+  Final$al <- al
+  Final$delta <- delta
   return(Final)
 } 
 

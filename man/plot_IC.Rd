@@ -4,10 +4,12 @@
 \alias{plot_IC}
 \title{Title}
 \usage{
-plot_IC(Final, col1 = c("orange", "lightblue", "grey30"))
+plot_IC(Final, col1 = c("orange", "lightblue", "grey30"), sim = FALSE)
 }
 \arguments{
-\item{Final}{}
+\item{Final}{output of sanssouci.hmm}
+
+\item{sim}{logical whether it come from a simulation (if TRUE de TRUE FDP is represented by a cross)}
 }
 \description{
 Title
